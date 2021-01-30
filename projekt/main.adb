@@ -7,7 +7,28 @@ procedure Main is
     type BoardRange is range 1 .. 3;
     type BoardType is array (BoardRange, BoardRange) of Character;
 
-    Board : BoardType := (('B', 'b', 'b'), ('a', 'a', 'a'), ('c', 'c', 'c'));
+    Board : BoardType := ((' ', ' ', ' '), (' ', ' ', ' '), (' ', ' ', ' '));
+
+    currentMove : Character := 'x';
+    isFinished : Boolean := False;
+    movesCount : Integer := 0;
+    playerSign : Character;
+
+
+    ---------------
+    -- task ComputerPlayer;
+    -- task body ComputerPlayer is
+       
+
+    -- begin
+    --     accept Start do
+    --        Put_Line("Computer Player is working!");
+    --     end Start;
+       
+    -- end ComputerPlayer;
+
+
+    ---------------
 
     procedure ShowBoard (Board : in BoardType  ) is
         begin
@@ -19,20 +40,31 @@ procedure Main is
                   if j /= 3 then  
                     Put(" | ");
                     end if;
-                    
+
                end loop;
 
                Put_Line("");
 
                if i /=3 then
-                Put_Line("-----------");
+                Put_Line("--+---+--");
                end if;
             end loop;
     end ShowBoard;
 
+    -----------------------------
+
 begin
     Ada.Text_IO.Put_Line ("Hello world!");
+    New_Line;
     -- Ada.Text_IO.Put_Line (Board(1,1));
     -- Put(Board(1,1));
+
+    Put_Line("Choose your sign, press 'x' or 'o' ");
+    Get(playerSign);
+
+    Put_Line("Your sign is " & playerSign);
+
     ShowBoard(Board);
+    
+    -- ComputerPlayer.Start;
 end Main;
