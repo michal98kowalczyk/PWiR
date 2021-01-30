@@ -10,7 +10,7 @@ procedure Main is
     Board : BoardType := ((' ', ' ', ' '), (' ', ' ', ' '), (' ', ' ', ' '));
 
     currentMove : Character := 'x';
-    isFinished : Boolean := False;
+    isNotFinished : Boolean := True;
     movesCount : Integer := 0;
     playerSign : Character;
 
@@ -21,6 +21,7 @@ procedure Main is
 
     procedure ShowBoard (Board : in BoardType  ) is
         begin
+        Put (ASCII.ESC & "[2J");
             for i in BoardRange loop
                for j in BoardRange loop
 
@@ -41,6 +42,30 @@ procedure Main is
     end ShowBoard;
 
     -----------------------------
+    procedure ChangeCurrentMove is
+    begin  
+        if currentMove = 'x' then 
+            currentMove :='o';
+        else currentMove := 'x';
+        end if;
+       
+    end ChangeCurrentMove;
+
+    -------------------------
+    procedure ComputerMove  is
+       
+    begin
+       Put_Line("Computers move");
+       ChangeCurrentMove;
+    end ComputerMove;
+    
+    ------------------
+    procedure PlayerMove  is
+       
+    begin
+       Put_Line("User move");
+       ChangeCurrentMove;
+    end PlayerMove;
 
     ---------------
     task type monitor is
@@ -78,30 +103,50 @@ procedure Main is
 task play;
 task body play is
 begin
-    Ada.Text_IO.Put_Line ("Hello world!");
+    Ada.Text_IO.Put_Line ("Tic-Tac-Toe!");
     New_Line;
-    -- Ada.Text_IO.Put_Line (Board(1,1));
-    -- Put(Board(1,1));
-
+    
     Put_Line("Choose your sign, press 'x' or 'o' ");
     Get(playerSign);
-    
+        
     while playerSign /= 'x' and playerSign /='o' loop
         Put_Line("Wrong character, press 'x' or 'o' ");
         Get(playerSign);
-       
+        
     end loop;
-    
+        
 
     Put_Line("Your sign is " & playerSign);
     New_Line;
 
-    ShowBoard(Board);
-    
-    
+    if playerSign = currentMove then
+        Put_Line("You start.");
+    else 
+        Put_Line("Computer starts.");
+    end if;
+       
 
-    mon.showScreen;
-    mon.showWinner("Draw");
+    delay 1.0;
+    while isNotFinished loop
+       
+
+        
+        mon.showScreen;
+
+        if currentMove = playerSign then
+            PlayerMove;
+        else 
+            ComputerMove;
+        end if;
+            
+        
+        
+        -- mon.showWinner("Draw");
+        delay 1.0;
+
+    end loop;
+        
+    
 end play;
 
 begin
