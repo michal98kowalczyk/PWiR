@@ -15,20 +15,9 @@ procedure Main is
     playerSign : Character;
 
 
-    ---------------
-    -- task ComputerPlayer;
-    -- task body ComputerPlayer is
-       
-
-    -- begin
-    --     accept Start do
-    --        Put_Line("Computer Player is working!");
-    --     end Start;
-       
-    -- end ComputerPlayer;
 
 
-    ---------------
+   ---------------
 
     procedure ShowBoard (Board : in BoardType  ) is
         begin
@@ -53,6 +42,41 @@ procedure Main is
 
     -----------------------------
 
+    ---------------
+    task type monitor is
+        entry showScreen;
+        entry showWinner(result : String);
+    
+    end monitor;
+
+    task body monitor is
+       
+    begin
+        loop
+           select 
+            accept showScreen do
+               ShowBoard(Board);
+            end showScreen;
+              
+           or
+            accept showWinner(result : in String) do
+               Put_Line(result);
+            end showWinner;
+
+           or 
+            terminate;
+        
+              
+           end select;
+        end loop;
+       
+    end monitor;
+
+    mon : monitor;
+ 
+
+task play;
+task body play is
 begin
     Ada.Text_IO.Put_Line ("Hello world!");
     New_Line;
@@ -61,10 +85,28 @@ begin
 
     Put_Line("Choose your sign, press 'x' or 'o' ");
     Get(playerSign);
+    
+    while playerSign /= 'x' and playerSign /='o' loop
+        Put_Line("Wrong character, press 'x' or 'o' ");
+        Get(playerSign);
+       
+    end loop;
+    
 
     Put_Line("Your sign is " & playerSign);
+    New_Line;
 
     ShowBoard(Board);
     
-    -- ComputerPlayer.Start;
+    
+
+    mon.showScreen;
+    mon.showWinner("Draw");
+end play;
+
+begin
+    null;
+
+
+
 end Main;
