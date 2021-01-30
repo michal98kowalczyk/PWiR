@@ -1,5 +1,6 @@
 with Ada.Text_IO;  use Ada.Text_IO;
--- With Gnat.IO; use Gnat.IO;
+with Ada.Numerics.Discrete_Random;
+
 
 procedure Main is
 
@@ -16,6 +17,10 @@ procedure Main is
     computerSign : Character;
     winner : Character;
 
+    subtype randRange is Integer range 1..3;
+    package Rand_Int is new Ada.Numerics.Discrete_Random(randRange);
+    use Rand_Int;
+    Gen: Generator; 
 
 
     ---------------
@@ -61,9 +66,27 @@ procedure Main is
 
     -------------------------
     procedure ComputerMove  is
+    
+    Found : Boolean := False;
+    Row, Column : Integer;
        
     begin
-       Put_Line("Computers move");
+    reset(Gen);
+       
+       while not Found loop
+        Row := random(Gen);
+        Column := random(Gen);
+
+        if Board(Row,Column) = ' ' then
+            Found := True;
+            Board(Row,Column) := computerSign;
+        end if;
+
+        
+          
+       end loop;
+    
+        movesCount := movesCount + 1;
        ChangeCurrentMove;
     end ComputerMove;
     
@@ -198,12 +221,15 @@ begin
         accept Check do
            winner := findWinner(Board);
            if winner = playerSign then
+                mon.showScreen;
                 mon.showWinner("Congratulations. You win!!!");
                 isNotFinished := False;
             elsif winner = computerSign then
+                mon.showScreen;
                 mon.showWinner("You lost!!!");
                 isNotFinished := False;
             elsif winner = 'd' and movesCount = 9 then
+                mon.showScreen;
                 mon.showWinner("It's draw!");
                 isNotFinished := False;
             end if;
@@ -260,7 +286,7 @@ begin
     end if;
        
 
-    delay 0.2;
+    delay 0.5;
     while isNotFinished loop
        
 
@@ -281,12 +307,8 @@ begin
         
         
            
-               
-
-
         
-        
-        delay 0.2;
+        delay 0.3;
 
     end loop;
 
