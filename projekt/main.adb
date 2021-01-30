@@ -4,8 +4,8 @@ with Ada.Text_IO;  use Ada.Text_IO;
 procedure Main is
 
     ---------
-    type BoardRange is range 1 .. 3;
-    type BoardType is array (BoardRange, BoardRange) of Character;
+    -- type BoardRange is range 1 .. 3 ;
+    type BoardType is array (1..3, 1..3) of Character;
 
     Board : BoardType := ((' ', ' ', ' '), (' ', ' ', ' '), (' ', ' ', ' '));
 
@@ -13,17 +13,25 @@ procedure Main is
     isNotFinished : Boolean := True;
     movesCount : Integer := 0;
     playerSign : Character;
+    computerSign : Character;
+    winner : Character;
 
 
 
+    ---------------
+    function char2int (c : Character) return Integer is
+        
+    begin
+        return Character'Pos(c) - 48;
+    end char2int;
 
    ---------------
 
     procedure ShowBoard (Board : in BoardType  ) is
         begin
         Put (ASCII.ESC & "[2J");
-            for i in BoardRange loop
-               for j in BoardRange loop
+            for i in 1..3 loop
+               for j in 1..3 loop
 
                   Put(Board(i,j));
 
@@ -61,11 +69,89 @@ procedure Main is
     
     ------------------
     procedure PlayerMove  is
+    
+    Tmp:Character;
+    Row : Integer; 
+    Column :Integer;
+    isNotPossibleChoice : Boolean := True;
        
     begin
-       Put_Line("User move");
+       Put_Line("Enter the line number: ");
+       Get(Tmp);
+    
+       Row := char2int(Tmp);
+       Put_Line("Enter the column number: ");
+       Get(Tmp);
+       Column := char2int(Tmp);
+       
+
+
+        while isNotPossibleChoice loop
+           if  Row<1 or Row>3 or Column<1 or Column>3   then
+                Put_Line("Enter the correct line number: ");
+                Get(Tmp);
+                Row := char2int(Tmp);
+                Put_Line("Enter the correct column number: ");
+                Get(Tmp);
+                Column := char2int(Tmp);
+            elsif Board(Row,Column) /= ' ' then                          ---other condition because otherwise program was exited
+                Put_Line("Enter the correct line number: ");
+                Get(Tmp);
+                Row := char2int(Tmp);
+                Put_Line("Enter the correct column number: ");
+                Get(Tmp);
+                Column := char2int(Tmp);
+               
+            else
+                Board(Row,Column) := playerSign;
+                isNotPossibleChoice := not isNotPossibleChoice;
+                movesCount := movesCount + 1;
+            end if;
+
+           
+        end loop;
+
+
        ChangeCurrentMove;
+     
     end PlayerMove;
+
+
+    -------------------------
+    function findWinner (Board: in BoardType) return Character is 
+
+    function checkLine (a,b,c : Character) return Boolean is
+       
+    begin
+       return (a=b) and (b=c);
+    end checkLine;
+        
+
+    begin
+
+        for i in  1..3 loop
+            if checkLine(Board(i,1),Board(i,2),Board(i,3)) then
+                
+                return Board(i,1);
+            elsif checkLine(Board(1,i),Board(2,i),Board(3,i)) then
+                
+                return Board(1,i);
+            end if;
+           
+            if checkLine(Board(1,1),Board(2,2),Board(3,3)) then
+                
+                return Board(1,1);
+            elsif checkLine(Board(1,3),Board(2,2),Board(3,1)) then
+               
+                return Board(1,3);
+            end if;
+
+        end loop;
+
+    return 'd';
+
+    end findWinner;
+
 
     ---------------
     task type monitor is
@@ -98,10 +184,52 @@ procedure Main is
     end monitor;
 
     mon : monitor;
- 
+
+
+task type Checker is
+    entry Check;
+end Checker;
+task body Checker is
+
+   
+begin
+    loop
+        select
+        accept Check do
+           winner := findWinner(Board);
+           if winner = playerSign then
+                mon.showWinner("Congratulations. You win!!!");
+                isNotFinished := False;
+            elsif winner = computerSign then
+                mon.showWinner("You lost!!!");
+                isNotFinished := False;
+            elsif winner = 'd' and movesCount = 9 then
+                mon.showWinner("It's draw!");
+                isNotFinished := False;
+            end if;
+        end Check;
+       
+    or
+       terminate;
+    end select;
+    end loop;
+   
+   
+end Checker;
+
+check : Checker;
+
+
+---------------
 
 task play;
 task body play is
+
+
+
+
+
+
 begin
     Ada.Text_IO.Put_Line ("Tic-Tac-Toe!");
     New_Line;
@@ -119,6 +247,12 @@ begin
     Put_Line("Your sign is " & playerSign);
     New_Line;
 
+    if playerSign = 'x' then
+        computerSign := 'o';
+    else computerSign := 'x';
+    end if;
+       
+
     if playerSign = currentMove then
         Put_Line("You start.");
     else 
@@ -126,7 +260,7 @@ begin
     end if;
        
 
-    delay 1.0;
+    delay 0.2;
     while isNotFinished loop
        
 
@@ -134,17 +268,29 @@ begin
         mon.showScreen;
 
         if currentMove = playerSign then
-            PlayerMove;
+            playerMove;
+            
+  
         else 
             ComputerMove;
         end if;
             
         
+
+        check.Check;
         
-        -- mon.showWinner("Draw");
-        delay 1.0;
+        
+           
+               
+
+
+        
+        
+        delay 0.2;
 
     end loop;
+
+    
         
     
 end play;
