@@ -5,7 +5,7 @@ with Ada.Numerics.Discrete_Random;
 procedure Main is
 
     ---------
-    -- type BoardRange is range 1 .. 3 ;
+    
     type BoardType is array (1..3, 1..3) of Character;
 
     Board : BoardType := ((' ', ' ', ' '), (' ', ' ', ' '), (' ', ' ', ' '));
