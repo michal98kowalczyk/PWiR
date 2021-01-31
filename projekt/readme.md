@@ -14,8 +14,3 @@ on linux
 $ ./main
 ```
 
-on windows
-
-```
-$ ./main.exe
-```
