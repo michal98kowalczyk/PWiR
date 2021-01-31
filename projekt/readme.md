@@ -14,7 +14,7 @@ on linux
 $ ./main
 ```
 
-on windows
+on windows could be some problem with display, but it's also work
 
 ```
 $ ./main.exe

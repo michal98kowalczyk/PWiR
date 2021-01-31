@@ -35,6 +35,8 @@ procedure Main is
     procedure ShowBoard (Board : in BoardType  ) is
         begin
         Put (ASCII.ESC & "[2J");
+        New_Line;
+        
             for i in 1..3 loop
                for j in 1..3 loop
 
